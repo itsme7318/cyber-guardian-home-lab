@@ -1,4 +1,3 @@
-
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -100,8 +99,8 @@ export function Sidebar() {
       </div>
       
       <div className="mt-auto p-4 text-xs text-muted-foreground border-t border-sidebar-border">
-        <div>Cyber Guardian SIEM v1.0</div>
-        <div>© 2025 Cyber Guardian</div>
+        <div>SIEM HOME LAB v1.0</div>
+        <div>© 2025 SIEM HOME LAB</div>
       </div>
     </aside>
   );
