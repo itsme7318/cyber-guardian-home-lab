@@ -44,6 +44,48 @@ export type Database = {
           },
         ]
       }
+      automation_rules: {
+        Row: {
+          action_target: string | null
+          action_type: string
+          created_at: string
+          description: string
+          enabled: boolean
+          id: string
+          last_run: string | null
+          name: string
+          run_count: number
+          trigger_condition: string | null
+          trigger_type: string
+        }
+        Insert: {
+          action_target?: string | null
+          action_type: string
+          created_at?: string
+          description: string
+          enabled?: boolean
+          id?: string
+          last_run?: string | null
+          name: string
+          run_count?: number
+          trigger_condition?: string | null
+          trigger_type: string
+        }
+        Update: {
+          action_target?: string | null
+          action_type?: string
+          created_at?: string
+          description?: string
+          enabled?: boolean
+          id?: string
+          last_run?: string | null
+          name?: string
+          run_count?: number
+          trigger_condition?: string | null
+          trigger_type?: string
+        }
+        Relationships: []
+      }
       exploit_history: {
         Row: {
           detected: boolean | null

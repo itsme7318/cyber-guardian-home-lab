@@ -18,61 +18,19 @@ interface AutomationRule {
   name: string;
   description: string;
   trigger_type: string;
-  trigger_condition: string;
+  trigger_condition: string | null;
   action_type: string;
-  action_target: string;
+  action_target: string | null;
   enabled: boolean;
   created_at: string;
   last_run: string | null;
   run_count: number;
 }
 
-const defaultRules: AutomationRule[] = [
-  {
-    id: "1",
-    name: "Critical Alert Auto-Response",
-    description: "Automatically respond to critical alerts by isolating affected systems",
-    trigger_type: "alert",
-    trigger_condition: "severity = 'critical'",
-    action_type: "isolate",
-    action_target: "affected_system",
-    enabled: true,
-    created_at: "2025-04-15T10:30:00Z",
-    last_run: "2025-04-20T14:22:10Z",
-    run_count: 3
-  },
-  {
-    id: "2",
-    name: "Suspicious Login Notification",
-    description: "Send notification when suspicious login activity is detected",
-    trigger_type: "login",
-    trigger_condition: "source = 'unusual_location'",
-    action_type: "notify",
-    action_target: "security_team",
-    enabled: true,
-    created_at: "2025-04-10T08:15:00Z",
-    last_run: "2025-04-21T09:45:33Z",
-    run_count: 8
-  },
-  {
-    id: "3",
-    name: "Weekly Security Scan",
-    description: "Run a comprehensive security scan every Sunday at 2 AM",
-    trigger_type: "schedule",
-    trigger_condition: "day = 'Sunday', time = '02:00'",
-    action_type: "scan",
-    action_target: "all_systems",
-    enabled: false,
-    created_at: "2025-03-28T16:00:00Z",
-    last_run: "2025-04-14T02:00:00Z",
-    run_count: 3
-  }
-];
-
 export default function Automation() {
-  const [automationRules, setAutomationRules] = useState<AutomationRule[]>(defaultRules);
-  const [loading, setLoading] = useState(false);
-  const [selectedTab, setSelectedTab] = useState("active");
+  const [automationRules, setAutomationRules] = useState<AutomationRule[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedTab, setSelectedTab] = useState("all");
   const [showNewRuleForm, setShowNewRuleForm] = useState(false);
   const [newRule, setNewRule] = useState<Partial<AutomationRule>>({
     name: "",
@@ -85,25 +43,45 @@ export default function Automation() {
   });
   const { toast } = useToast();
 
-  // This would fetch real data from Supabase in a real implementation
+  // Fetch automation rules from Supabase
   useEffect(() => {
-    setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setAutomationRules(defaultRules);
-      setLoading(false);
-    }, 1000);
-  }, []);
+    async function fetchAutomationRules() {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('automation_rules')
+          .select('*')
+          .order('created_at', { ascending: false });
+          
+        if (error) {
+          throw error;
+        }
+        
+        setAutomationRules(data || []);
+      } catch (error) {
+        console.error('Error fetching automation rules:', error);
+        toast({
+          title: "Error Loading Rules",
+          description: "Failed to load automation rules",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchAutomationRules();
+  }, [toast]);
 
-  // Handle real-time updates (would connect to actual Supabase real-time in a real implementation)
-  const handleRealtimeUpdate = ({ eventType, new: newRule, old: oldRule }: any) => {
+  // Handle real-time updates from Supabase
+  const handleRealtimeUpdate = useCallback(({ eventType, new: newRule, old: oldRule }: any) => {
     setAutomationRules(prev => {
       if (eventType === "INSERT" && newRule) {
         toast({
           title: "New Automation Rule Created",
           description: newRule.name,
         });
-        return [...prev, newRule as AutomationRule];
+        return [newRule as AutomationRule, ...prev];
       }
       if (eventType === "UPDATE" && newRule) {
         toast({
@@ -121,61 +99,103 @@ export default function Automation() {
       }
       return prev;
     });
-  };
+  }, [toast]);
 
-  // In a real implementation, this would listen to a real Supabase table
-  // useSupabaseRealtime<AutomationRule>("automation_rules", handleRealtimeUpdate);
+  // Subscribe to real-time updates
+  useSupabaseRealtime<AutomationRule>("automation_rules", handleRealtimeUpdate);
 
-  const handleToggleRule = (id: string) => {
-    setAutomationRules(prev => 
-      prev.map(rule => 
-        rule.id === id ? { ...rule, enabled: !rule.enabled } : rule
-      )
-    );
-    
-    const rule = automationRules.find(r => r.id === id);
-    if (rule) {
+  const handleToggleRule = async (id: string, currentState: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('automation_rules')
+        .update({ enabled: !currentState })
+        .eq('id', id);
+        
+      if (error) throw error;
+      
+      // We don't need to manually update the state as the real-time subscription will handle it
+      
+      // Show toast notification
+      const rule = automationRules.find(r => r.id === id);
+      if (rule) {
+        toast({
+          title: `Automation Rule ${currentState ? 'Disabled' : 'Enabled'}`,
+          description: rule.name,
+        });
+      }
+    } catch (error) {
+      console.error('Error toggling rule:', error);
       toast({
-        title: `Automation Rule ${rule.enabled ? 'Disabled' : 'Enabled'}`,
-        description: rule.name,
-      });
-    }
-  };
-
-  const handleDeleteRule = (id: string) => {
-    const rule = automationRules.find(r => r.id === id);
-    setAutomationRules(prev => prev.filter(rule => rule.id !== id));
-    
-    if (rule) {
-      toast({
-        title: "Automation Rule Deleted",
-        description: rule.name,
+        title: "Error",
+        description: "Failed to update rule status",
         variant: "destructive",
       });
     }
   };
 
-  const handleRunRule = (id: string) => {
-    const rule = automationRules.find(r => r.id === id);
-    if (rule) {
-      setAutomationRules(prev => 
-        prev.map(r => 
-          r.id === id ? { 
-            ...r, 
-            last_run: new Date().toISOString(),
-            run_count: r.run_count + 1
-          } : r
-        )
-      );
+  const handleDeleteRule = async (id: string) => {
+    try {
+      const rule = automationRules.find(r => r.id === id);
+      
+      const { error } = await supabase
+        .from('automation_rules')
+        .delete()
+        .eq('id', id);
+        
+      if (error) throw error;
+      
+      // We don't need to manually update the state as the real-time subscription will handle it
+      
+      if (rule) {
+        toast({
+          title: "Automation Rule Deleted",
+          description: rule.name,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting rule:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete rule",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleRunRule = async (id: string) => {
+    try {
+      const rule = automationRules.find(r => r.id === id);
+      if (!rule) return;
+      
+      const now = new Date().toISOString();
+      const { error } = await supabase
+        .from('automation_rules')
+        .update({
+          last_run: now,
+          run_count: rule.run_count + 1
+        })
+        .eq('id', id);
+        
+      if (error) throw error;
+      
+      // We don't need to manually update the state as the real-time subscription will handle it
       
       toast({
         title: "Automation Rule Executed",
         description: `${rule.name} executed successfully`,
       });
+    } catch (error) {
+      console.error('Error running rule:', error);
+      toast({
+        title: "Error",
+        description: "Failed to run automation rule",
+        variant: "destructive",
+      });
     }
   };
 
-  const handleCreateRule = () => {
+  const handleCreateRule = async () => {
     if (!newRule.name || !newRule.description) {
       toast({
         title: "Required Fields Missing",
@@ -185,36 +205,46 @@ export default function Automation() {
       return;
     }
 
-    const createdRule: AutomationRule = {
-      id: Math.random().toString(36).substring(2, 9),
-      name: newRule.name || "",
-      description: newRule.description || "",
-      trigger_type: newRule.trigger_type || "alert",
-      trigger_condition: newRule.trigger_condition || "",
-      action_type: newRule.action_type || "notify",
-      action_target: newRule.action_target || "",
-      enabled: newRule.enabled || true,
-      created_at: new Date().toISOString(),
-      last_run: null,
-      run_count: 0
-    };
+    try {
+      const { error } = await supabase
+        .from('automation_rules')
+        .insert([{
+          name: newRule.name,
+          description: newRule.description,
+          trigger_type: newRule.trigger_type || "alert",
+          trigger_condition: newRule.trigger_condition || null,
+          action_type: newRule.action_type || "notify",
+          action_target: newRule.action_target || null,
+          enabled: newRule.enabled !== undefined ? newRule.enabled : true
+        }]);
+        
+      if (error) throw error;
+      
+      // We don't need to manually update the state as the real-time subscription will handle it
+      
+      setShowNewRuleForm(false);
+      setNewRule({
+        name: "",
+        description: "",
+        trigger_type: "alert",
+        trigger_condition: "",
+        action_type: "notify",
+        action_target: "",
+        enabled: true
+      });
 
-    setAutomationRules(prev => [...prev, createdRule]);
-    setShowNewRuleForm(false);
-    setNewRule({
-      name: "",
-      description: "",
-      trigger_type: "alert",
-      trigger_condition: "",
-      action_type: "notify",
-      action_target: "",
-      enabled: true
-    });
-
-    toast({
-      title: "Automation Rule Created",
-      description: createdRule.name,
-    });
+      toast({
+        title: "Automation Rule Created",
+        description: newRule.name,
+      });
+    } catch (error) {
+      console.error('Error creating rule:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create automation rule",
+        variant: "destructive",
+      });
+    }
   };
 
   const filteredRules = automationRules.filter(rule => {
@@ -367,7 +397,7 @@ export default function Automation() {
                   </div>
                   <Switch 
                     checked={rule.enabled} 
-                    onCheckedChange={() => handleToggleRule(rule.id)}
+                    onCheckedChange={() => handleToggleRule(rule.id, rule.enabled)}
                   />
                 </div>
               </CardHeader>
