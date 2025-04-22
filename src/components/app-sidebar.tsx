@@ -111,63 +111,63 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <a href="#">
+                <SidebarMenuButton asChild isActive={isActive("/log-explorer")}>
+                  <Link to="/log-explorer">
                     <Database className="mr-2 h-5 w-5" />
                     Log Explorer
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <a href="#">
+                <SidebarMenuButton asChild isActive={isActive("/threat-intelligence")}>
+                  <Link to="/threat-intelligence">
                     <Shield className="mr-2 h-5 w-5" />
                     Threat Intelligence
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <a href="#">
+                <SidebarMenuButton asChild isActive={isActive("/network-monitor")}>
+                  <Link to="/network-monitor">
                     <Network className="mr-2 h-5 w-5" />
                     Network Monitor
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <a href="#">
+                <SidebarMenuButton asChild isActive={isActive("/forensics")}>
+                  <Link to="/forensics">
                     <Bug className="mr-2 h-5 w-5" />
                     Forensics Sandbox
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <a href="#">
+                <SidebarMenuButton asChild isActive={isActive("/terminal")}>
+                  <Link to="/terminal">
                     <Terminal className="mr-2 h-5 w-5" />
                     Live Terminal
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <a href="#">
+                <SidebarMenuButton asChild isActive={isActive("/automation")}>
+                  <Link to="/automation">
                     <Zap className="mr-2 h-5 w-5" />
                     Automation
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <a href="#">
+                <SidebarMenuButton asChild isActive={isActive("/users")}>
+                  <Link to="/users">
                     <Users className="mr-2 h-5 w-5" />
                     User Directory
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton asChild isActive={isActive("/learn")}>
                   <Link to="/learn">
                     <Book className="mr-2 h-5 w-5" />
                     Learn
