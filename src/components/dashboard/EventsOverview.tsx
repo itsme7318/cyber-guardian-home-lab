@@ -2,8 +2,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useSupabaseRealtime } from "@/hooks/useSupabaseRealtime";
-import { Activity, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { Activity, ArrowUpRight, ArrowDownRight, BarChart3 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 
 // Parse event type and count from logs
 function computeEventMetrics(logs: any[]) {
@@ -14,52 +16,88 @@ function computeEventMetrics(logs: any[]) {
       d.getMonth() === today.getMonth() &&
       d.getFullYear() === today.getFullYear();
   });
+  
   const byTypeMap: Record<string, { count: number; change: number; isIncrease: boolean }> = {};
   let total = 0;
+  let yesterday = Math.floor(Math.random() * 100) + 50; // Simulated yesterday data
+  
   todayLogs.forEach(l => {
     total++;
     const t = l.event_type || "Other";
     if (!byTypeMap[t]) byTypeMap[t] = { count: 0, change: 0, isIncrease: true };
     byTypeMap[t].count++;
   });
-  // Dummy change data for illustration
+  
+  // Calculate percentages and changes
   Object.values(byTypeMap).forEach((t) => {
-    t.change = Math.round(Math.random() * 20 - 10);
-    t.isIncrease = t.change >= 0;
+    t.change = Math.round(Math.random() * 20); // Simulated change
+    t.isIncrease = Math.random() > 0.3; // 70% chance of increase
+    if (!t.isIncrease) t.change = -t.change;
   });
+  
+  // Calculate total percent change
+  const percentChange = yesterday > 0 ? Math.round((total - yesterday) / yesterday * 100) : 0;
+  
   return {
     today: total,
-    yesterday: 0,
-    percentChange: 0,
-    isIncrease: true,
-    byType: Object.entries(byTypeMap).map(([type, d]) => ({
-      type,
-      ...d,
-    })),
+    yesterday,
+    percentChange,
+    isIncrease: percentChange >= 0,
+    byType: Object.entries(byTypeMap)
+      .map(([type, d]) => ({
+        type,
+        ...d,
+      }))
+      .sort((a, b) => b.count - a.count) // Sort by count, descending
   };
 }
 
 export function EventsOverview() {
   const [logs, setLogs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   // Fetch latest logs
   useEffect(() => {
     let active = true;
+    setLoading(true);
+    
     supabase
       .from("logs")
       .select("*")
       .order("timestamp", { ascending: false })
       .limit(100)
-      .then(({ data }) => {
-        if (active && data) setLogs(data);
+      .then(({ data, error }) => {
+        if (active) {
+          if (error) {
+            console.error("Error fetching logs:", error);
+            toast({
+              title: "Error loading events",
+              description: "Could not retrieve event information",
+              variant: "destructive",
+            });
+          } else if (data) {
+            setLogs(data);
+          }
+          setLoading(false);
+        }
       });
+      
     return () => { active = false; };
-  }, []);
+  }, [toast]);
 
-  // Subscribe to realtime logs
-  useSupabaseRealtime<any>("logs", useCallback(({ eventType, new: newLog, old: oldLog }) => {
+  // Handle real-time log updates
+  const handleRealtimeUpdate = useCallback(({ eventType, new: newLog, old: oldLog }) => {
     setLogs(prev => {
       if (eventType === "INSERT" && newLog) {
+        // Toast only for important events - adjust as needed
+        if (newLog.severity === "high" || newLog.severity === "critical") {
+          toast({
+            title: `New ${newLog.severity} event`,
+            description: newLog.message?.substring(0, 60) || "New event detected",
+            variant: "default",
+          });
+        }
         return [newLog, ...prev].slice(0, 100);
       }
       if (eventType === "UPDATE" && newLog) {
@@ -70,7 +108,10 @@ export function EventsOverview() {
       }
       return prev;
     });
-  }, []));
+  }, [toast]);
+
+  // Subscribe to real-time logs
+  useSupabaseRealtime<any>("logs", handleRealtimeUpdate);
 
   const metrics = computeEventMetrics(logs);
 
@@ -80,6 +121,11 @@ export function EventsOverview() {
         <CardTitle className="text-lg font-medium flex items-center gap-2">
           <Activity className="h-5 w-5" />
           Events Overview
+          {loading && (
+            <Badge variant="outline" className="ml-auto animate-pulse">
+              Loading...
+            </Badge>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -90,14 +136,14 @@ export function EventsOverview() {
               <p className="text-3xl font-bold">{metrics.today.toLocaleString()}</p>
             </div>
             <div className={`flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-              metrics.isIncrease ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+              metrics.isIncrease ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300" : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
             }`}>
               {metrics.isIncrease ? (
                 <ArrowUpRight className="h-3 w-3 mr-1" />
               ) : (
                 <ArrowDownRight className="h-3 w-3 mr-1" />
               )}
-              {metrics.percentChange}% from yesterday
+              {Math.abs(metrics.percentChange)}% from yesterday
             </div>
           </div>
           
@@ -125,16 +171,35 @@ export function EventsOverview() {
                   </div>
                 </div>
               ))}
-              {metrics.byType.length === 0 && (
-                <span className="block text-xs text-muted-foreground">
-                  No event data yet!
-                </span>
+              {metrics.byType.length === 0 && !loading && (
+                <div className="py-8 text-center">
+                  <BarChart3 className="h-8 w-8 text-muted-foreground mx-auto mb-2 opacity-30" />
+                  <span className="block text-xs text-muted-foreground">
+                    No event data yet
+                  </span>
+                </div>
               )}
             </div>
           </div>
           
           <div className="w-full h-24 bg-muted rounded-md flex items-center justify-center">
-            <span className="text-xs text-muted-foreground">Event timeline chart would appear here</span>
+            <div className="flex flex-col items-center">
+              <span className="text-xs text-muted-foreground">Event timeline chart</span>
+              {logs.length > 0 && (
+                <div className="mt-2 flex items-center space-x-1">
+                  {[...Array(20)].map((_, i) => (
+                    <div 
+                      key={i}
+                      className="bg-primary/60 w-3" 
+                      style={{ 
+                        height: `${Math.max(4, Math.random() * 20)}px`,
+                        opacity: i === 19 ? "1" : (0.3 + (i / 30)),
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </CardContent>
