@@ -61,6 +61,24 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Cybersecurity-themed colors
+				alert: {
+					low: '#3b82f6',     // Blue for low severity
+					medium: '#f59e0b',  // Amber for medium severity
+					high: '#ef4444',    // Red for high severity
+					critical: '#7f1d1d' // Dark red for critical severity
+				},
+				cyber: {
+					primary: '#0f172a',   // Dark blue for main theme
+					secondary: '#1e293b', // Slightly lighter blue
+					accent: '#38bdf8',    // Bright blue for highlights
+					success: '#22c55e',   // Green for successful operations
+					warning: '#f59e0b',   // Amber for warnings
+					danger: '#ef4444',    // Red for dangerous operations
+					info: '#3b82f6',      // Blue for informational elements
+					terminal: '#0f172a',  // Terminal/console background
+					termintalText: '#a5f3fc' // Terminal text color
 				}
 			},
 			borderRadius: {
