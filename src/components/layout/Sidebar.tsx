@@ -1,3 +1,4 @@
+
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -44,9 +45,9 @@ export function Sidebar() {
       <div className="px-3 py-2">
         <h2 className="text-xl font-bold flex items-center gap-2 mb-6 px-2">
           <div className="h-8 w-8 rounded bg-cyber-accent flex items-center justify-center">
-            <span className="text-white font-bold">CG</span>
+            <span className="text-white font-bold">SH</span>
           </div>
-          <span>Cyber Guardian</span>
+          <span>SIEM HOME LAB</span>
         </h2>
         
         <nav className="space-y-1 mt-8">
