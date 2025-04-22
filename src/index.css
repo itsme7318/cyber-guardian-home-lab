@@ -98,7 +98,7 @@
 
 @layer components {
   .cyber-terminal {
-    @apply bg-cyber-terminal text-termintalText font-mono p-4 rounded-md;
+    @apply bg-cyber-terminal text-cyber-termintalText font-mono p-4 rounded-md;
   }
   
   .alert-badge-low {
