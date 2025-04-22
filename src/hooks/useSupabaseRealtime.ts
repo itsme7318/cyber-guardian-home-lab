@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 type EventType = "INSERT" | "UPDATE" | "DELETE";
 type Callback<T> = (payload: { eventType: EventType; new?: T | null; old?: T | null }) => void;
 
+// Supabase returns strongly-typed payloads, but for generic hooks, we cast defensively
 export function useSupabaseRealtime<T extends Record<string, any>>(
   table: string,
   callback: Callback<T>,
@@ -16,11 +17,11 @@ export function useSupabaseRealtime<T extends Record<string, any>>(
         "postgres_changes",
         { event: "*", schema: "public", table },
         (payload) => {
-          // Payload may include { eventType, new, old }
+          // We assert unknown first, then as T|null if possible
           callback({
             eventType: payload.eventType as EventType,
-            new: payload.new as T | null,
-            old: payload.old as T | null,
+            new: (payload.new ? (payload.new as T) : null),
+            old: (payload.old ? (payload.old as T) : null),
           });
         }
       )
