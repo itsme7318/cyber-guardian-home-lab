@@ -3,9 +3,9 @@ import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 type EventType = "INSERT" | "UPDATE" | "DELETE";
-type Callback<T> = (payload: { eventType: EventType; new?: T; old?: T }) => void;
+type Callback<T> = (payload: { eventType: EventType; new?: T | null; old?: T | null }) => void;
 
-export function useSupabaseRealtime<T>(
+export function useSupabaseRealtime<T extends Record<string, any>>(
   table: string,
   callback: Callback<T>,
 ) {
@@ -18,9 +18,9 @@ export function useSupabaseRealtime<T>(
         (payload) => {
           // Payload may include { eventType, new, old }
           callback({
-            eventType: payload.eventType,
-            new: payload.new,
-            old: payload.old,
+            eventType: payload.eventType as EventType,
+            new: payload.new as T | null,
+            old: payload.old as T | null,
           });
         }
       )
