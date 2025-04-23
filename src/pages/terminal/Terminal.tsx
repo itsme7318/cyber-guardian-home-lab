@@ -1,25 +1,11 @@
-
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Terminal as TerminalIcon, Command, Webhook, Server, Network, Shield, FileText, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/components/ui/use-toast";
 
 export default function Terminal() {
-  const { userHasRole } = useAuth();
-  
-  const handleToolClick = (tool: string, requiredRole?: 'admin' | 'analyst') => {
-    if (requiredRole && !userHasRole(requiredRole)) {
-      toast({
-        title: "Access Denied",
-        description: `You need ${requiredRole} privileges to use this tool.`,
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    // Here you would handle the actual tool functionality
+  const handleToolClick = (tool: string) => {
     toast({
       title: "Tool Activated",
       description: `${tool} is now active.`,
@@ -54,7 +40,7 @@ export default function Terminal() {
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Log Analyzer", "analyst")}
+                onClick={() => handleToolClick("Log Analyzer")}
               >
                 <FileText className="mr-2 h-4 w-4" />
                 Log Analyzer
@@ -62,7 +48,7 @@ export default function Terminal() {
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Service Manager", "admin")}
+                onClick={() => handleToolClick("Service Manager")}
               >
                 <Server className="mr-2 h-4 w-4" />
                 Service Manager

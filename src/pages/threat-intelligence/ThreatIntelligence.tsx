@@ -1,24 +1,11 @@
-
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, Globe, AlertTriangle, Search, Database } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/components/ui/use-toast";
 
 export default function ThreatIntelligence() {
-  const { userHasRole } = useAuth();
-  
-  const handleToolClick = (tool: string, requiredRole?: 'admin' | 'analyst') => {
-    if (requiredRole && !userHasRole(requiredRole)) {
-      toast({
-        title: "Access Denied",
-        description: `You need ${requiredRole} privileges to use this tool.`,
-        variant: "destructive",
-      });
-      return;
-    }
-    
+  const handleToolClick = (tool: string) => {
     toast({
       title: "Tool Activated",
       description: `${tool} is now active.`,
@@ -53,7 +40,7 @@ export default function ThreatIntelligence() {
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Malware Repository", "analyst")}
+                onClick={() => handleToolClick("Malware Repository")}
               >
                 <AlertTriangle className="mr-2 h-4 w-4" />
                 Malware Repository
@@ -61,7 +48,7 @@ export default function ThreatIntelligence() {
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Attack Pattern Library", "analyst")}
+                onClick={() => handleToolClick("Attack Pattern Library")}
               >
                 <Shield className="mr-2 h-4 w-4" />
                 Attack Pattern Library

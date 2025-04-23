@@ -44,7 +44,7 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
               
-              {/* Protected Routes */}
+              {/* Protected Routes - All users can access everything now */}
               <Route path="/" element={
                 <ProtectedRoute>
                   <Index />
@@ -66,7 +66,7 @@ const App = () => (
                 </ProtectedRoute>
               } />
               <Route path="/attack-simulation" element={
-                <ProtectedRoute requiredRole="analyst">
+                <ProtectedRoute>
                   <AttackSimulation />
                 </ProtectedRoute>
               } />
@@ -86,7 +86,7 @@ const App = () => (
                 </ProtectedRoute>
               } />
               
-              {/* Professional Tool Routes */}
+              {/* Professional Tool Routes - All users can access */}
               <Route path="/log-explorer" element={
                 <ProtectedRoute>
                   <LogExplorer />
@@ -107,20 +107,18 @@ const App = () => (
                   <Forensics />
                 </ProtectedRoute>
               } />
-              
-              {/* Admin-only routes */}
               <Route path="/terminal" element={
-                <ProtectedRoute requiredRole="admin">
+                <ProtectedRoute>
                   <Terminal />
                 </ProtectedRoute>
               } />
               <Route path="/automation" element={
-                <ProtectedRoute requiredRole="admin">
+                <ProtectedRoute>
                   <Automation />
                 </ProtectedRoute>
               } />
               <Route path="/users" element={
-                <ProtectedRoute requiredRole="admin">
+                <ProtectedRoute>
                   <Users />
                 </ProtectedRoute>
               } />
