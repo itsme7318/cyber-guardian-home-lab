@@ -5,16 +5,21 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 // Pages
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import Auth from "./pages/auth/Auth";
 import Alerts from "./pages/alerts/Alerts";
 import Investigations from "./pages/investigations/Investigations";
 import AttackSimulation from "./pages/attack-simulation/AttackSimulation";
 import Reports from "./pages/reports/Reports";
 import Settings from "./pages/settings/Settings";
 import Learn from "./pages/learn/Learn";
+import Profile from "./pages/profile/Profile";
+import Unauthorized from "./pages/Unauthorized";
 
 // Professional Tool Pages
 import LogExplorer from "./pages/log-explorer/LogExplorer";
@@ -30,32 +35,100 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="dark">
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/alerts" element={<Alerts />} />
-            <Route path="/investigations" element={<Investigations />} />
-            <Route path="/attack-simulation" element={<AttackSimulation />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/learn" element={<Learn />} />
-            
-            {/* Professional Tool Routes */}
-            <Route path="/log-explorer" element={<LogExplorer />} />
-            <Route path="/threat-intelligence" element={<ThreatIntelligence />} />
-            <Route path="/network-monitor" element={<NetworkMonitor />} />
-            <Route path="/forensics" element={<Forensics />} />
-            <Route path="/terminal" element={<Terminal />} />
-            <Route path="/automation" element={<Automation />} />
-            <Route path="/users" element={<Users />} />
-            
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/unauthorized" element={<Unauthorized />} />
+              
+              {/* Protected Routes */}
+              <Route path="/" element={
+                <ProtectedRoute>
+                  <Index />
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } />
+              <Route path="/alerts" element={
+                <ProtectedRoute>
+                  <Alerts />
+                </ProtectedRoute>
+              } />
+              <Route path="/investigations" element={
+                <ProtectedRoute>
+                  <Investigations />
+                </ProtectedRoute>
+              } />
+              <Route path="/attack-simulation" element={
+                <ProtectedRoute requiredRole="analyst">
+                  <AttackSimulation />
+                </ProtectedRoute>
+              } />
+              <Route path="/reports" element={
+                <ProtectedRoute>
+                  <Reports />
+                </ProtectedRoute>
+              } />
+              <Route path="/settings" element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              } />
+              <Route path="/learn" element={
+                <ProtectedRoute>
+                  <Learn />
+                </ProtectedRoute>
+              } />
+              
+              {/* Professional Tool Routes - Admin Only */}
+              <Route path="/log-explorer" element={
+                <ProtectedRoute requiredRole="analyst">
+                  <LogExplorer />
+                </ProtectedRoute>
+              } />
+              <Route path="/threat-intelligence" element={
+                <ProtectedRoute requiredRole="analyst">
+                  <ThreatIntelligence />
+                </ProtectedRoute>
+              } />
+              <Route path="/network-monitor" element={
+                <ProtectedRoute requiredRole="analyst">
+                  <NetworkMonitor />
+                </ProtectedRoute>
+              } />
+              <Route path="/forensics" element={
+                <ProtectedRoute requiredRole="analyst">
+                  <Forensics />
+                </ProtectedRoute>
+              } />
+              <Route path="/terminal" element={
+                <ProtectedRoute requiredRole="admin">
+                  <Terminal />
+                </ProtectedRoute>
+              } />
+              <Route path="/automation" element={
+                <ProtectedRoute requiredRole="admin">
+                  <Automation />
+                </ProtectedRoute>
+              } />
+              <Route path="/users" element={
+                <ProtectedRoute requiredRole="admin">
+                  <Users />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );
