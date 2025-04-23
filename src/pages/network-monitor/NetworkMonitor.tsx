@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { useSupabaseRealtime } from "@/hooks/useSupabaseRealtime";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect, useCallback } from "react";
+import { Json } from "@/integrations/supabase/types"; // Import Json type from Supabase types
 
 interface NetworkEvent {
   id: string;
@@ -44,17 +45,26 @@ export default function NetworkMonitor() {
       if (error) {
         console.error('Error loading network events:', error);
       } else if (data) {
-        const formattedEvents = data.map(event => ({
-          id: event.id,
-          source_ip: event.event_data.source_ip || 'unknown',
-          destination_ip: event.event_data.destination_ip || 'unknown',
-          protocol: event.event_data.protocol || 'TCP',
-          port: event.event_data.port || 0,
-          bytes: event.event_data.bytes || 0,
-          timestamp: event.timestamp,
-          event_type: event.event_type,
-          severity: event.severity || 'low'
-        }));
+        const formattedEvents = data.map(event => {
+          // Safely cast event_data to avoid TypeScript errors
+          const eventData = event.event_data as Record<string, any>;
+          
+          return {
+            id: event.id,
+            source_ip: String(eventData.source_ip || 'unknown'),
+            destination_ip: String(eventData.destination_ip || 'unknown'),
+            protocol: String(eventData.protocol || 'TCP'),
+            port: Number(eventData.port || 0),
+            bytes: Number(eventData.bytes || 0),
+            timestamp: event.timestamp,
+            event_type: event.event_type,
+            // Ensure severity is one of the allowed values
+            severity: (event.severity === 'medium' || event.severity === 'high') 
+              ? event.severity 
+              : 'low' as 'low' | 'medium' | 'high'
+          };
+        });
+        
         setNetworkEvents(formattedEvents);
         updateNetworkStats(formattedEvents);
       }
@@ -67,16 +77,22 @@ export default function NetworkMonitor() {
   // Handle real-time updates
   const handleRealtimeUpdate = useCallback(({ eventType, new: newEvent }) => {
     if (eventType === 'INSERT' && newEvent.event_type === 'network_traffic') {
-      const formattedEvent = {
+      // Safely cast event_data to avoid TypeScript errors
+      const eventData = newEvent.event_data as Record<string, any>;
+      
+      const formattedEvent: NetworkEvent = {
         id: newEvent.id,
-        source_ip: newEvent.event_data.source_ip || 'unknown',
-        destination_ip: newEvent.event_data.destination_ip || 'unknown',
-        protocol: newEvent.event_data.protocol || 'TCP',
-        port: newEvent.event_data.port || 0,
-        bytes: newEvent.event_data.bytes || 0,
+        source_ip: String(eventData.source_ip || 'unknown'),
+        destination_ip: String(eventData.destination_ip || 'unknown'),
+        protocol: String(eventData.protocol || 'TCP'),
+        port: Number(eventData.port || 0),
+        bytes: Number(eventData.bytes || 0),
         timestamp: newEvent.timestamp,
         event_type: newEvent.event_type,
-        severity: newEvent.severity || 'low'
+        // Ensure severity is one of the allowed values
+        severity: (newEvent.severity === 'medium' || newEvent.severity === 'high') 
+          ? newEvent.severity 
+          : 'low' as 'low' | 'medium' | 'high'
       };
 
       setNetworkEvents(prev => {
@@ -231,4 +247,27 @@ export default function NetworkMonitor() {
       </Card>
     </Layout>
   );
+  
+  function updateNetworkStats(events: NetworkEvent[]) {
+    setNetworkStats({
+      activeConnections: events.length,
+      bytesTransferred: events.reduce((sum, event) => sum + event.bytes, 0),
+      suspiciousActivities: events.filter(e => e.severity === 'medium').length,
+      blockedAttempts: events.filter(e => e.severity === 'high').length
+    });
+  }
+
+  function getSeverityBadge(severity: NetworkEvent['severity']) {
+    const classes = {
+      low: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
+      medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
+      high: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+    };
+
+    return (
+      <Badge className={classes[severity]} variant="outline">
+        {severity}
+      </Badge>
+    );
+  }
 }
