@@ -1,3 +1,4 @@
+
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shield, Globe, AlertTriangle, Search, Database } from "lucide-react";
@@ -77,7 +78,7 @@ export default function ThreatIntelligence() {
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Threat Correlation Engine", "analyst")}
+                onClick={() => handleToolClick("Threat Correlation Engine")}
               >
                 <Globe className="mr-2 h-4 w-4" />
                 Threat Correlation Engine
@@ -85,7 +86,7 @@ export default function ThreatIntelligence() {
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Forensic Analysis", "analyst")}
+                onClick={() => handleToolClick("Forensic Analysis")}
               >
                 <Shield className="mr-2 h-4 w-4" />
                 Forensic Analysis
@@ -106,7 +107,7 @@ export default function ThreatIntelligence() {
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Automated Response", "admin")}
+                onClick={() => handleToolClick("Automated Response")}
               >
                 <Shield className="mr-2 h-4 w-4" />
                 Automated Response
@@ -114,7 +115,7 @@ export default function ThreatIntelligence() {
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Incident Management", "analyst")}
+                onClick={() => handleToolClick("Incident Management")}
               >
                 <AlertTriangle className="mr-2 h-4 w-4" />
                 Incident Management

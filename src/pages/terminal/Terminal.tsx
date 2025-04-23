@@ -1,3 +1,4 @@
+
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Terminal as TerminalIcon, Command, Webhook, Server, Network, Shield, FileText, Lock } from "lucide-react";
@@ -77,7 +78,7 @@ export default function Terminal() {
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Network Security Scanner", "analyst")}
+                onClick={() => handleToolClick("Network Security Scanner")}
               >
                 <Shield className="mr-2 h-4 w-4" />
                 Network Security Scanner
@@ -85,7 +86,7 @@ export default function Terminal() {
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Packet Analyzer", "analyst")}
+                onClick={() => handleToolClick("Packet Analyzer")}
               >
                 <FileText className="mr-2 h-4 w-4" />
                 Packet Analyzer
@@ -106,7 +107,7 @@ export default function Terminal() {
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Firewall Manager", "admin")}
+                onClick={() => handleToolClick("Firewall Manager")}
               >
                 <Shield className="mr-2 h-4 w-4" />
                 Firewall Manager
@@ -114,7 +115,7 @@ export default function Terminal() {
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("System Hardening", "admin")}
+                onClick={() => handleToolClick("System Hardening")}
               >
                 <Lock className="mr-2 h-4 w-4" />
                 System Hardening
@@ -122,7 +123,7 @@ export default function Terminal() {
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Security Logs", "analyst")}
+                onClick={() => handleToolClick("Security Logs")}
               >
                 <FileText className="mr-2 h-4 w-4" />
                 Security Logs
