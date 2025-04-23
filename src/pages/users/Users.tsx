@@ -136,9 +136,7 @@ export default function Users() {
     <Layout>
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">User Directory</h1>
-        <p className="text-muted-foreground">
-          Manage users and their security permissions
-        </p>
+        <p className="text-muted-foreground">User management and access control tools</p>
       </div>
       
       <Card className="mb-6">
