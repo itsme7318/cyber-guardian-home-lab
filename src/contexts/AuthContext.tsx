@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
@@ -55,7 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     
     if (session?.user) {
       try {
-        // Fetch user profile using RPC function instead of direct table access
+        // Fetch user profile using RPC function
         const { data: profile, error } = await supabase.rpc('get_user_profile', {
           p_user_id: session.user.id
         });
@@ -76,8 +77,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           console.error('Error loading user roles:', rolesError);
           setRoles([]);
         } else {
-          // Ensure we can extract role names from the result
-          setRoles(Array.isArray(userRoles) ? userRoles.map(r => r.role || '') : []);
+          // The RPC function now returns an array of strings, so we don't need to map over it
+          setRoles(Array.isArray(userRoles) ? userRoles : []);
         }
       } catch (error) {
         console.error('Session handling error:', error);
