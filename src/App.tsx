@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -87,27 +86,29 @@ const App = () => (
                 </ProtectedRoute>
               } />
               
-              {/* Professional Tool Routes - Admin Only */}
+              {/* Professional Tool Routes */}
               <Route path="/log-explorer" element={
-                <ProtectedRoute requiredRole="analyst">
+                <ProtectedRoute>
                   <LogExplorer />
                 </ProtectedRoute>
               } />
               <Route path="/threat-intelligence" element={
-                <ProtectedRoute requiredRole="analyst">
+                <ProtectedRoute>
                   <ThreatIntelligence />
                 </ProtectedRoute>
               } />
               <Route path="/network-monitor" element={
-                <ProtectedRoute requiredRole="analyst">
+                <ProtectedRoute>
                   <NetworkMonitor />
                 </ProtectedRoute>
               } />
               <Route path="/forensics" element={
-                <ProtectedRoute requiredRole="analyst">
+                <ProtectedRoute>
                   <Forensics />
                 </ProtectedRoute>
               } />
+              
+              {/* Admin-only routes */}
               <Route path="/terminal" element={
                 <ProtectedRoute requiredRole="admin">
                   <Terminal />
