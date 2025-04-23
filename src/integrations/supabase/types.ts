@@ -296,7 +296,43 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      add_user_role: {
+        Args: { p_user_id: string; p_role: string; p_created_by: string }
+        Returns: undefined
+      }
+      get_all_users_with_roles: {
+        Args: Record<PropertyKey, never>
+        Returns: Json[]
+      }
+      get_user_activity_logs: {
+        Args: { p_user_id: string }
+        Returns: Json[]
+      }
+      get_user_profile: {
+        Args: { p_user_id: string }
+        Returns: Json
+      }
+      get_user_roles: {
+        Args: { p_user_id: string }
+        Returns: string[]
+      }
+      log_user_activity: {
+        Args: {
+          p_user_id: string
+          p_activity_type: string
+          p_details: Json
+          p_ip_address: string
+        }
+        Returns: Json
+      }
+      remove_user_role: {
+        Args: { p_user_id: string; p_role: string }
+        Returns: undefined
+      }
+      update_user_profile: {
+        Args: { p_user_id: string; p_username: string; p_full_name: string }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never

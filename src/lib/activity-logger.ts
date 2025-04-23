@@ -1,8 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
 
-// Since we can't directly use the user_activity_logs table until types are updated,
-// we'll use a more generic approach
 export const logUserActivity = async (
   userId: string,
   activityType: string,
@@ -11,7 +9,6 @@ export const logUserActivity = async (
   if (!userId) return null;
   
   try {
-    // Use a direct SQL query to insert into user_activity_logs
     const { data, error } = await supabase.rpc('log_user_activity', {
       p_user_id: userId,
       p_activity_type: activityType,
@@ -29,7 +26,6 @@ export const logUserActivity = async (
 
 export const getUserActivityLogs = async (userId: string) => {
   try {
-    // Use a direct SQL query to get user activity logs
     const { data, error } = await supabase.rpc('get_user_activity_logs', {
       p_user_id: userId
     });

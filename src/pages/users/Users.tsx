@@ -56,7 +56,6 @@ export default function Users() {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      // Use RPC function to get users with their roles
       const { data, error } = await supabase.rpc('get_all_users_with_roles');
 
       if (error) throw error;
@@ -77,8 +76,7 @@ export default function Users() {
     if (!selectedUser || !selectedRole || !currentUser) return;
     
     try {
-      // Use RPC function to add role
-      const { data, error } = await supabase.rpc('add_user_role', {
+      const { error } = await supabase.rpc('add_user_role', {
         p_user_id: selectedUser.id,
         p_role: selectedRole,
         p_created_by: currentUser.id
@@ -91,7 +89,6 @@ export default function Users() {
         description: `${selectedRole} role has been added to user.`,
       });
       
-      // Refresh users list
       fetchUsers();
       setDialogOpen(false);
     } catch (error: any) {
@@ -106,8 +103,7 @@ export default function Users() {
 
   const removeRole = async (userId: string, role: string) => {
     try {
-      // Use RPC function to remove role
-      const { data, error } = await supabase.rpc('remove_user_role', {
+      const { error } = await supabase.rpc('remove_user_role', {
         p_user_id: userId,
         p_role: role
       });
@@ -119,7 +115,6 @@ export default function Users() {
         description: `${role} role has been removed from user.`,
       });
       
-      // Refresh users list
       fetchUsers();
     } catch (error: any) {
       console.error('Error removing role:', error);
