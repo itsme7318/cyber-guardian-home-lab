@@ -19,7 +19,6 @@ export default function ThreatIntelligence() {
       return;
     }
     
-    // Here you would handle the actual tool functionality
     toast({
       title: "Tool Activated",
       description: `${tool} is now active.`,
@@ -37,8 +36,8 @@ export default function ThreatIntelligence() {
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Globe className="h-5 w-5" />
-              Threat Feeds
+              <Database className="h-5 w-5" />
+              Threat Database
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -46,26 +45,26 @@ export default function ThreatIntelligence() {
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("IoC Database")}
+                onClick={() => handleToolClick("Known Threats Database")}
               >
-                <Shield className="mr-2 h-4 w-4" />
-                IoC Database
+                <Database className="mr-2 h-4 w-4" />
+                Known Threats Database
               </Button>
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Active Threats", "analyst")}
+                onClick={() => handleToolClick("Malware Repository", "analyst")}
               >
                 <AlertTriangle className="mr-2 h-4 w-4" />
-                Active Threats
+                Malware Repository
               </Button>
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Global Intel Map", "analyst")}
+                onClick={() => handleToolClick("Attack Pattern Library", "analyst")}
               >
-                <Globe className="mr-2 h-4 w-4" />
-                Global Intel Map
+                <Shield className="mr-2 h-4 w-4" />
+                Attack Pattern Library
               </Button>
             </div>
           </CardContent>
@@ -83,26 +82,26 @@ export default function ThreatIntelligence() {
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Malware Database")}
+                onClick={() => handleToolClick("Real-time Threat Scanner")}
               >
                 <Search className="mr-2 h-4 w-4" />
-                Malware Database
+                Real-time Threat Scanner
               </Button>
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Vulnerability Scanner", "analyst")}
+                onClick={() => handleToolClick("Threat Correlation Engine", "analyst")}
               >
-                <Database className="mr-2 h-4 w-4" />
-                Vulnerability Scanner
+                <Globe className="mr-2 h-4 w-4" />
+                Threat Correlation Engine
               </Button>
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Reputation Check")}
+                onClick={() => handleToolClick("Forensic Analysis", "analyst")}
               >
                 <Shield className="mr-2 h-4 w-4" />
-                Reputation Check
+                Forensic Analysis
               </Button>
             </div>
           </CardContent>
@@ -111,8 +110,8 @@ export default function ThreatIntelligence() {
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5" />
-              Threat Response
+              <Shield className="h-5 w-5" />
+              Response Tools
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -120,26 +119,26 @@ export default function ThreatIntelligence() {
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Block Threats", "admin")}
+                onClick={() => handleToolClick("Automated Response", "admin")}
               >
                 <Shield className="mr-2 h-4 w-4" />
-                Block Threats
+                Automated Response
               </Button>
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Alert Rules", "analyst")}
+                onClick={() => handleToolClick("Incident Management", "analyst")}
               >
                 <AlertTriangle className="mr-2 h-4 w-4" />
-                Alert Rules
+                Incident Management
               </Button>
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Export Intel")}
+                onClick={() => handleToolClick("Mitigation Planning")}
               >
                 <Database className="mr-2 h-4 w-4" />
-                Export Intel
+                Mitigation Planning
               </Button>
             </div>
           </CardContent>

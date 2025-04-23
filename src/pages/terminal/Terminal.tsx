@@ -4,12 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Terminal as TerminalIcon, Command, Webhook, Server, Network, Shield, FileText, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 
 export default function Terminal() {
   const { userHasRole } = useAuth();
-  const navigate = useNavigate();
   
   const handleToolClick = (tool: string, requiredRole?: 'admin' | 'analyst') => {
     if (requiredRole && !userHasRole(requiredRole)) {
@@ -48,26 +46,26 @@ export default function Terminal() {
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Command Shell", "admin")}
+                onClick={() => handleToolClick("System Process Monitor")}
               >
                 <Command className="mr-2 h-4 w-4" />
-                Command Shell
+                System Process Monitor
               </Button>
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("System Status")}
+                onClick={() => handleToolClick("Log Analyzer", "analyst")}
+              >
+                <FileText className="mr-2 h-4 w-4" />
+                Log Analyzer
+              </Button>
+              <Button 
+                variant="outline" 
+                className="w-full justify-start"
+                onClick={() => handleToolClick("Service Manager", "admin")}
               >
                 <Server className="mr-2 h-4 w-4" />
-                System Status
-              </Button>
-              <Button 
-                variant="outline" 
-                className="w-full justify-start"
-                onClick={() => handleToolClick("Service Control", "admin")}
-              >
-                <Webhook className="mr-2 h-4 w-4" />
-                Service Control
+                Service Manager
               </Button>
             </div>
           </CardContent>
@@ -76,7 +74,7 @@ export default function Terminal() {
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Server className="h-5 w-5" />
+              <Network className="h-5 w-5" />
               Network Tools
             </CardTitle>
           </CardHeader>
@@ -85,26 +83,26 @@ export default function Terminal() {
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Port Scanner", "analyst")}
+                onClick={() => handleToolClick("Network Traffic Monitor")}
               >
                 <Network className="mr-2 h-4 w-4" />
-                Port Scanner
+                Network Traffic Monitor
               </Button>
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Network Monitor")}
+                onClick={() => handleToolClick("Network Security Scanner", "analyst")}
               >
-                <Network className="mr-2 h-4 w-4" />
-                Network Monitor
+                <Shield className="mr-2 h-4 w-4" />
+                Network Security Scanner
               </Button>
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("DNS Tools", "analyst")}
+                onClick={() => handleToolClick("Packet Analyzer", "analyst")}
               >
-                <Server className="mr-2 h-4 w-4" />
-                DNS Tools
+                <FileText className="mr-2 h-4 w-4" />
+                Packet Analyzer
               </Button>
             </div>
           </CardContent>
@@ -113,7 +111,7 @@ export default function Terminal() {
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
+              <Lock className="h-5 w-5" />
               Security Tools
             </CardTitle>
           </CardHeader>
@@ -122,26 +120,26 @@ export default function Terminal() {
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Security Audit", "admin")}
+                onClick={() => handleToolClick("Firewall Manager", "admin")}
               >
                 <Shield className="mr-2 h-4 w-4" />
-                Security Audit
+                Firewall Manager
               </Button>
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Firewall Rules", "admin")}
+                onClick={() => handleToolClick("System Hardening", "admin")}
               >
                 <Lock className="mr-2 h-4 w-4" />
-                Firewall Rules
+                System Hardening
               </Button>
               <Button 
                 variant="outline" 
                 className="w-full justify-start"
-                onClick={() => handleToolClick("Access Control", "analyst")}
+                onClick={() => handleToolClick("Security Logs", "analyst")}
               >
                 <FileText className="mr-2 h-4 w-4" />
-                Access Control
+                Security Logs
               </Button>
             </div>
           </CardContent>
