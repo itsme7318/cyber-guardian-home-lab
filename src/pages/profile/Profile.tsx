@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { getUserActivityLogs } from "@/lib/activity-logger";
 import { useToast } from "@/hooks/use-toast";
 import { User, Clock, Shield } from "lucide-react";
 import {
@@ -44,8 +42,16 @@ export default function Profile() {
   const loadActivities = async () => {
     if (!user) return;
     
-    const logs = await getUserActivityLogs(user.id);
-    setActivities(logs || []);
+    try {
+      const { data, error } = await supabase.rpc('get_user_activity_logs', {
+        p_user_id: user.id
+      });
+      
+      if (error) throw error;
+      setActivities(data || []);
+    } catch (error) {
+      console.error('Failed to load activities:', error);
+    }
   };
 
   const handleUpdateProfile = async () => {
@@ -54,15 +60,11 @@ export default function Profile() {
     setIsLoading(true);
     
     try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({
-          username,
-          full_name: fullName,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', user.id)
-        .select();
+      const { data, error } = await supabase.rpc('update_user_profile', {
+        p_user_id: user.id,
+        p_username: username,
+        p_full_name: fullName
+      });
         
       if (error) throw error;
       

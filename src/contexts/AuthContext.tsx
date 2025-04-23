@@ -56,15 +56,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     
     if (session?.user) {
       try {
-        // Log the login activity
-        await logUserActivity('login', { method: 'email' });
-
-        // Fetch user profile
-        const { data: profile, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
+        // Fetch user profile using RPC function instead of direct table access
+        const { data: profile, error } = await supabase.rpc('get_user_profile', {
+          p_user_id: session.user.id
+        });
 
         if (error) {
           console.error('Error loading user profile:', error);
@@ -73,17 +68,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           setProfile(profile);
         }
 
-        // Fetch user roles
-        const { data: userRoles, error: rolesError } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', session.user.id);
+        // Fetch user roles using RPC function
+        const { data: userRoles, error: rolesError } = await supabase.rpc('get_user_roles', {
+          p_user_id: session.user.id
+        });
 
         if (rolesError) {
           console.error('Error loading user roles:', rolesError);
           setRoles([]);
         } else {
-          setRoles(userRoles.map(r => r.role));
+          // Ensure we can extract role names from the result
+          setRoles(Array.isArray(userRoles) ? userRoles.map(r => r.role || '') : []);
         }
       } catch (error) {
         console.error('Session handling error:', error);
@@ -100,14 +95,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (!user) return;
 
     try {
-      await supabase
-        .from('user_activity_logs')
-        .insert({
-          user_id: user.id,
-          activity_type: activityType,
-          details,
-          ip_address: '127.0.0.1' // In a real app, you would get this from the client
-        });
+      await supabase.rpc('log_user_activity', {
+        p_user_id: user.id,
+        p_activity_type: activityType,
+        p_details: details,
+        p_ip_address: '127.0.0.1' // In a real app, you would get this from the client
+      });
     } catch (error) {
       console.error('Failed to log activity:', error);
     }

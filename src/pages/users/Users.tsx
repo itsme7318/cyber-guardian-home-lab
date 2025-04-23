@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { User, UserPlus, Shield, UserCheck, UserX, AlertTriangle } from "lucide-react";
@@ -57,30 +56,11 @@ export default function Users() {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      // Get users from auth.users via profiles
-      const { data: profiles, error: profileError } = await supabase
-        .from('profiles')
-        .select('*');
+      // Use RPC function to get users with their roles
+      const { data, error } = await supabase.rpc('get_all_users_with_roles');
 
-      if (profileError) throw profileError;
-
-      // Get roles for each user
-      const userRolesPromises = profiles.map(async (profile) => {
-        const { data: roles, error: rolesError } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', profile.id);
-          
-        if (rolesError) throw rolesError;
-        
-        return {
-          ...profile,
-          roles: roles.map(r => r.role)
-        };
-      });
-      
-      const usersWithRoles = await Promise.all(userRolesPromises);
-      setUsers(usersWithRoles);
+      if (error) throw error;
+      setUsers(data || []);
     } catch (error) {
       console.error('Error loading users:', error);
       toast({
@@ -94,29 +74,15 @@ export default function Users() {
   };
 
   const handleAddRole = async () => {
-    if (!selectedUser || !selectedRole) return;
+    if (!selectedUser || !selectedRole || !currentUser) return;
     
     try {
-      // Check if user already has this role
-      const hasRole = selectedUser.roles.includes(selectedRole);
-      
-      if (hasRole) {
-        toast({
-          title: "Role already assigned",
-          description: `User already has the ${selectedRole} role.`,
-          variant: "default"
-        });
-        return;
-      }
-      
-      // Add role to user
-      const { error } = await supabase
-        .from('user_roles')
-        .insert({
-          user_id: selectedUser.id,
-          role: selectedRole,
-          created_by: currentUser?.id
-        });
+      // Use RPC function to add role
+      const { data, error } = await supabase.rpc('add_user_role', {
+        p_user_id: selectedUser.id,
+        p_role: selectedRole,
+        p_created_by: currentUser.id
+      });
         
       if (error) throw error;
       
@@ -128,11 +94,11 @@ export default function Users() {
       // Refresh users list
       fetchUsers();
       setDialogOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding role:', error);
       toast({
         title: "Error adding role",
-        description: "There was a problem adding the role to this user.",
+        description: error.message || "There was a problem adding the role to this user.",
         variant: "destructive"
       });
     }
@@ -140,11 +106,11 @@ export default function Users() {
 
   const removeRole = async (userId: string, role: string) => {
     try {
-      const { error } = await supabase
-        .from('user_roles')
-        .delete()
-        .eq('user_id', userId)
-        .eq('role', role);
+      // Use RPC function to remove role
+      const { data, error } = await supabase.rpc('remove_user_role', {
+        p_user_id: userId,
+        p_role: role
+      });
         
       if (error) throw error;
       
@@ -155,11 +121,11 @@ export default function Users() {
       
       // Refresh users list
       fetchUsers();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error removing role:', error);
       toast({
         title: "Error removing role",
-        description: "There was a problem removing the role.",
+        description: error.message || "There was a problem removing the role.",
         variant: "destructive"
       });
     }
