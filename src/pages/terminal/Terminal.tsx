@@ -3,8 +3,31 @@ import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Terminal as TerminalIcon, Command, Webhook, Server, Network, Shield, FileText, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { toast } from "@/components/ui/use-toast";
 
 export default function Terminal() {
+  const { userHasRole } = useAuth();
+  const navigate = useNavigate();
+  
+  const handleToolClick = (tool: string, requiredRole?: 'admin' | 'analyst') => {
+    if (requiredRole && !userHasRole(requiredRole)) {
+      toast({
+        title: "Access Denied",
+        description: `You need ${requiredRole} privileges to use this tool.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Here you would handle the actual tool functionality
+    toast({
+      title: "Tool Activated",
+      description: `${tool} is now active.`,
+    });
+  };
+
   return (
     <Layout>
       <div className="mb-6">
@@ -22,15 +45,27 @@ export default function Terminal() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <Button variant="outline" className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start"
+                onClick={() => handleToolClick("Command Shell", "admin")}
+              >
                 <Command className="mr-2 h-4 w-4" />
                 Command Shell
               </Button>
-              <Button variant="outline" className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start"
+                onClick={() => handleToolClick("System Status")}
+              >
                 <Server className="mr-2 h-4 w-4" />
                 System Status
               </Button>
-              <Button variant="outline" className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start"
+                onClick={() => handleToolClick("Service Control", "admin")}
+              >
                 <Webhook className="mr-2 h-4 w-4" />
                 Service Control
               </Button>
@@ -47,15 +82,27 @@ export default function Terminal() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <Button variant="outline" className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start"
+                onClick={() => handleToolClick("Port Scanner", "analyst")}
+              >
                 <Network className="mr-2 h-4 w-4" />
                 Port Scanner
               </Button>
-              <Button variant="outline" className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start"
+                onClick={() => handleToolClick("Network Monitor")}
+              >
                 <Network className="mr-2 h-4 w-4" />
                 Network Monitor
               </Button>
-              <Button variant="outline" className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start"
+                onClick={() => handleToolClick("DNS Tools", "analyst")}
+              >
                 <Server className="mr-2 h-4 w-4" />
                 DNS Tools
               </Button>
@@ -72,15 +119,27 @@ export default function Terminal() {
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <Button variant="outline" className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start"
+                onClick={() => handleToolClick("Security Audit", "admin")}
+              >
                 <Shield className="mr-2 h-4 w-4" />
                 Security Audit
               </Button>
-              <Button variant="outline" className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start"
+                onClick={() => handleToolClick("Firewall Rules", "admin")}
+              >
                 <Lock className="mr-2 h-4 w-4" />
                 Firewall Rules
               </Button>
-              <Button variant="outline" className="w-full justify-start">
+              <Button 
+                variant="outline" 
+                className="w-full justify-start"
+                onClick={() => handleToolClick("Access Control", "analyst")}
+              >
                 <FileText className="mr-2 h-4 w-4" />
                 Access Control
               </Button>
