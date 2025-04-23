@@ -1,7 +1,7 @@
 
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Terminal as TerminalIcon, Command, Webhook, Server } from "lucide-react";
+import { Terminal as TerminalIcon, Command, Webhook, Server, Network, Shield, FileText, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Terminal() {
@@ -48,15 +48,15 @@ export default function Terminal() {
           <CardContent>
             <div className="space-y-2">
               <Button variant="outline" className="w-full justify-start">
-                <Terminal className="mr-2 h-4 w-4" />
+                <Network className="mr-2 h-4 w-4" />
                 Port Scanner
               </Button>
               <Button variant="outline" className="w-full justify-start">
-                <Terminal className="mr-2 h-4 w-4" />
+                <Network className="mr-2 h-4 w-4" />
                 Network Monitor
               </Button>
               <Button variant="outline" className="w-full justify-start">
-                <Terminal className="mr-2 h-4 w-4" />
+                <Server className="mr-2 h-4 w-4" />
                 DNS Tools
               </Button>
             </div>
@@ -66,22 +66,22 @@ export default function Terminal() {
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Command className="h-5 w-5" />
+              <Shield className="h-5 w-5" />
               Security Tools
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
               <Button variant="outline" className="w-full justify-start">
-                <Terminal className="mr-2 h-4 w-4" />
+                <Shield className="mr-2 h-4 w-4" />
                 Security Audit
               </Button>
               <Button variant="outline" className="w-full justify-start">
-                <Terminal className="mr-2 h-4 w-4" />
+                <Lock className="mr-2 h-4 w-4" />
                 Firewall Rules
               </Button>
               <Button variant="outline" className="w-full justify-start">
-                <Terminal className="mr-2 h-4 w-4" />
+                <FileText className="mr-2 h-4 w-4" />
                 Access Control
               </Button>
             </div>
