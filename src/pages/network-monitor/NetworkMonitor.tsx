@@ -247,27 +247,4 @@ export default function NetworkMonitor() {
       </Card>
     </Layout>
   );
-  
-  function updateNetworkStats(events: NetworkEvent[]) {
-    setNetworkStats({
-      activeConnections: events.length,
-      bytesTransferred: events.reduce((sum, event) => sum + event.bytes, 0),
-      suspiciousActivities: events.filter(e => e.severity === 'medium').length,
-      blockedAttempts: events.filter(e => e.severity === 'high').length
-    });
-  }
-
-  function getSeverityBadge(severity: NetworkEvent['severity']) {
-    const classes = {
-      low: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-      medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-      high: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-    };
-
-    return (
-      <Badge className={classes[severity]} variant="outline">
-        {severity}
-      </Badge>
-    );
-  }
 }
